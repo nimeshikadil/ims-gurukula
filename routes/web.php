@@ -1,5 +1,19 @@
 <?php
+// routes/web.php
+
 $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// If your project is in the 'ims-gurukula' folder, remove that from the path:
+$base = '/ims-gurukula';
+if (strpos($request, $base) === 0) {
+    $request = substr($request, strlen($base));
+}
+if ($request == '') {
+    $request = '/';
+}
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 switch($request) {
     case '/login':

@@ -1,117 +1,119 @@
-<?php session_start(); ?>
+<?php
+// register.php
+
+// Enable error reporting (for debugging - remove in production)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Database connection parameters
+$host = 'localhost';
+$dbname = 'lms_db'; // Change to your database name
+$dbUser = 'root';
+$dbPass = '';
+
+try {
+    // Create a new PDO connection
+    $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+    $pdo = new PDO($dsn, $dbUser, $dbPass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+    ]);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
+
+$message = "";
+
+// Process the registration form when submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve and trim form data
+    $user_name = trim($_POST['user_name']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    // Optionally, allow the user to select a role. Default is Student (role_id = 1)
+    $role_id = isset($_POST['role_id']) ? intval($_POST['role_id']) : 1;
+
+    // Basic validation
+    if(empty($user_name) || empty($email) || empty($password)) {
+        $message = "Please fill in all fields.";
+    } else {
+        // Check if a user with the same username or email already exists
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? OR user_name = ?");
+        $stmt->execute([$email, $user_name]);
+        if ($stmt->rowCount() > 0) {
+            $message = "A user with that email or username already exists.";
+        } else {
+            // Hash the password using BCRYPT
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+            // Insert the new user into the users table
+            $stmt = $pdo->prepare("INSERT INTO users (user_name, email, password, role_id) VALUES (?, ?, ?, ?)");
+            if ($stmt->execute([$user_name, $email, $hashedPassword, $role_id])) {
+                $message = "Registration successful! You can now log in.";
+            } else {
+                $message = "Registration failed. Please try again.";
+            }
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>User Registration - Gurukula Institution</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             background-color: #f8f9fa;
         }
         .register-container {
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 20px;
             background: #fff;
-            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-        }
-        .error {
-            color: red;
-            font-size: 0.9rem;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
+<div class="container">
     <div class="register-container">
-        <h2 class="text-center mb-4">Register</h2>
-        
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger" role="alert">
-                <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
-            </div>
+        <h3 class="text-center mb-4">User Registration</h3>
+        <?php if($message): ?>
+            <div class="alert alert-info text-center"><?php echo htmlspecialchars($message); ?></div>
         <?php endif; ?>
-        
-        <form action="/ims-gurukula/controllers/AuthController.php" method="POST">
-            <!-- Name input -->
+        <form method="POST" action="register.php">
             <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" name="name" id="name" class="form-control" required>
+                <label for="user_name" class="form-label">Username</label>
+                <input type="text" name="user_name" id="user_name" class="form-control" placeholder="Enter username" required>
             </div>
-            
-            <!-- Email input -->
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" id="email" class="form-control" required>
+                <input type="email" name="email" id="email" class="form-control" placeholder="Enter email" required>
             </div>
-            
-            <!-- Password input -->
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
             </div>
-            
-            <!-- Role selection -->
+            <!-- Optional: Role selection -->
             <div class="mb-3">
-                <label for="role" class="form-label">Role</label>
-                <select name="role_id" id="role" class="form-select" required>
-                    <option value="1">Student</option>
+                <label for="role_id" class="form-label">Role</label>
+                <select name="role_id" id="role_id" class="form-control">
+                    <option value="1" selected>Student</option>
                     <option value="2">Teacher</option>
+                    <option value="5">Owner</option>
                     <option value="3">Parent</option>
                     <option value="4">Worker</option>
-                    <option value="5">Owner</option>
                 </select>
             </div>
-            
-            <!-- Extra fields based on role -->
-            <div id="extra-fields" class="mb-3"></div>
-            
-            <!-- Submit button -->
-            <button type="submit" name="register" class="btn btn-primary w-100">Register</button>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>
     </div>
-    
-    <script>
-        document.querySelector('select[name="role_id"]').addEventListener('change', function() {
-            const extraFields = document.getElementById('extra-fields');
-            extraFields.innerHTML = '';
-            
-            if (this.value == '1') { // Student
-                extraFields.innerHTML = 
-                    '<div class="mb-3">' +
-                    '<label for="phone" class="form-label">Phone</label>' +
-                    '<input type="text" name="phone" id="phone" class="form-control" required>' +
-                    '</div>' +
-                    '<div class="mb-3">' +
-                    '<label for="registration_date" class="form-label">Registration Date</label>' +
-                    '<input type="date" name="registration_date" id="registration_date" class="form-control" required>' +
-                    '</div>';
-            } else if (this.value == '2') { // Teacher
-                extraFields.innerHTML = 
-                    '<div class="mb-3">' +
-                    '<label for="subject" class="form-label">Subject</label>' +
-                    '<input type="text" name="subject" id="subject" class="form-control" required>' +
-                    '</div>';
-            } else if (this.value == '4') { // Worker
-                extraFields.innerHTML = 
-                    '<div class="mb-3">' +
-                    '<label for="phone" class="form-label">Phone</label>' +
-                    '<input type="text" name="phone" id="phone" class="form-control" required>' +
-                    '</div>' +
-                    '<div class="mb-3">' +
-                    '<label for="job_role" class="form-label">Job Role</label>' +
-                    '<input type="text" name="job_role" id="job_role" class="form-control" required>' +
-                    '</div>';
-            }
-        });
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

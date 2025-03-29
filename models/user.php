@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../config/database.php';
 
 class User {
-    // Authenticate owner by username and password
     public static function authenticate($user_name, $password) {
         $database = new Database();
         $conn = $database->getConnection();
@@ -13,7 +12,7 @@ class User {
         $stmt->bindParam(':user_name', $user_name);
         $stmt->execute();
         
-        $user = $stmt->fetch();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($user && password_verify($password, $user['password'])) {
             return $user;
         }

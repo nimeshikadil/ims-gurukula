@@ -53,7 +53,7 @@
           <div class="card-header">Owner Login</div>
           <div class="card-body">
             <?php if(isset($error)) { echo "<div class='alert alert-danger'>$error</div>"; } ?>
-            <form method="POST" action="/login">
+            <form method="POST" action="/ims-gurukula/login">
             <div class="mb-3">
                 <label for="user_name" class="form-label">Username</label>
                 <input type="text" name="user_name" id="user_name" class="form-control" required>
