@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Owner Dashboard - Gurukula Institution</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-size: 1.2rem;
+    }
+    /* Sidebar styles */
+    .sidebar {
+      height: 100vh;
+      width: 260px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #02005F;
+      padding: 25px;
+      color: #fff;
+      transition: all 0.3s;
+    }
+    .sidebar h3 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+    }
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      transition: 0.3s;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #67BAFD;
+      transform: scale(1.05);
+    }
+    /* Main content styles */
+    .content {
+      margin-left: 280px;
+      padding: 30px;
+    }
+    /* Dashboard cards styles */
+    .dashboard-card {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      padding: 35px;
+      transition: transform 0.3s ease-in-out;
+      margin-bottom: 20px;
+      width: 700px;
+      max-width: 300px;
+      
+    }
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+    .dashboard-card i {
+      font-size: 40px;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+    .dashboard-card h5 {
+      font-size: 1.3rem;
+      margin-bottom: 0;
+      font-weight: 600;
+    }
+    .card-container {
+      display: flex;
+      justify-content: center;
+      gap: 90px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>Owner Dashboard</h3>
+    <a href="/owner/dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="/admin/financial-updates"><i class="fas fa-money-bill-wave"></i> Financial Updates</a>
+    <a href="/admin/forum"><i class="fas fa-comments"></i> Forum</a>
+    <a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['user']['user_name'] ?? 'Owner'); ?>!</h2>
+    
+    <div class="card-container mt-4">
+      <!-- Add Student Card -->
+      <a href="../auth/register.php?role=student" class="text-decoration-none">
+        <div class="dashboard-card">
+          <i class="fas fa-user-graduate"></i>
+          <h5>Add Student</h5>
+        </div>
+      </a>
+      <!-- Add Teacher Card -->
+      <a href="/register.php?role=teacher" class="text-decoration-none">
+        <div class="dashboard-card">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h5>Add Teacher</h5>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
