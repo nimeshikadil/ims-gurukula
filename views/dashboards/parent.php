@@ -85,12 +85,11 @@
   </style>
 </head>
 <body>
- 
-<?php include_once __DIR__ . '/../../assets/worker_sidebar.php'; ?>
-
+  
+<?php include_once __DIR__ . '/../../assets/parent_sidebar.php'; ?>
   <!-- Main Content -->
   <div class="content">
-    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['user']['user_name'] ?? 'Worker'); ?>!</h2>
+    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['user']['user_name'] ?? 'Parent'); ?>!</h2>
     
   </div>
 

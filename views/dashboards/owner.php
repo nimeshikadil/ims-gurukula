@@ -78,21 +78,16 @@
     }
     .card-container {
       display: flex;
-      justify-content: center;
+      justify-content: left;
       gap: 90px;
       flex-wrap: wrap;
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h3>Owner Dashboard</h3>
-    <a href="/owner/dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="/admin/financial-updates"><i class="fas fa-money-bill-wave"></i> Financial Updates</a>
-    <a href="/admin/forum"><i class="fas fa-comments"></i> Forum</a>
-    <a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
-  </div>
+
+<?php include_once __DIR__ . '/../../assets/owner_sidebar.php'; ?>
+
 
   <!-- Main Content -->
   <div class="content">
@@ -100,14 +95,14 @@
     
     <div class="card-container mt-4">
       <!-- Add Student Card -->
-      <a href="../auth/register.php?role=student" class="text-decoration-none">
+      <a href="../auth/student_register.php" class="text-decoration-none">
         <div class="dashboard-card">
           <i class="fas fa-user-graduate"></i>
           <h5>Add Student</h5>
         </div>
       </a>
       <!-- Add Teacher Card -->
-      <a href="/register.php?role=teacher" class="text-decoration-none">
+      <a href="../auth/register.php?role=teacher" class="text-decoration-none">
         <div class="dashboard-card">
           <i class="fas fa-chalkboard-teacher"></i>
           <h5>Add Teacher</h5>
